@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cat ~/hack/learn | dmenu -i -c -l 20 | tee >(xargs -I{} sed -i "/^{}$/d" ~/hack/learn) | xargs -I{} echo "Removed: {}" 

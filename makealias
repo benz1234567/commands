@@ -1,0 +1,8 @@
+#!/bin/sh
+
+alias=$1
+command=$2
+
+echo "alias ${alias}='$command'" >> ~/.bash_aliases
+exec bash
+exit 0

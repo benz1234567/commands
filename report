@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ~/reports
+latest=$(ls | sort -r | head -1)
+st vim $latest

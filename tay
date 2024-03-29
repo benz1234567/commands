@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo $2 >> ~/hack/bugs/$1
+echo "Added '$2' to ~/hack/bugs/$1"

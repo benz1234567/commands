@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
 # Ensure a repo is provided
 if [ $# -lt 1 ]; then
     handle_error 1 "Usage: $0 <repo name>"

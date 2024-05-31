@@ -1,3 +1,8 @@
 #!/bin/bash
 
-touch $1 && chmod +x $1 && nvim $1
+if ! test -f $HOME/commands/$1; then
+    echo -e '#!/bin/bash\n# Function to handle errors\nhandle_error() {\n    local exit_code=$1\n    local message=$2\n    echo "Error: $message"\n    exit $exit_code\n}\n\n# Usage\nif [ $# -lt 1 ]; then\n    handle_error 1 "Usage: $0 <>"\nfi\n\n' > $HOME/commands/$1 && chmod +x $HOME/commands/$1 && nvim -c 'startinsert' + $HOME/commands/$1
+else
+    echo "Script already exists"
+    exit 1
+fi

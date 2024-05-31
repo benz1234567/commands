@@ -1,0 +1,27 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# -lt 1 ]; then
+    handle_error 1 "Usage: $0 <regex> <characters before:after> <opt: file>"
+elif [ $# == 1 ]
+then
+    around=10
+elif [ $# -gt 1 ]
+then
+    around=$2
+fi
+
+if echo "$around" | grep -q '[0-9]\:[0-9]'; then
+    before=$(echo $around | awk -F: '{print $1}')
+    after=$(echo $around | awk -F: '{print $2}')
+    grep --color=auto -orP ".{0,$before}$1.{0,$after}" $3
+else
+    grep --color=auto -orP ".{0,$around}$1.{0,$around}" $3
+fi

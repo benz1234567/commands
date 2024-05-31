@@ -1,0 +1,5 @@
+#!/bin/bash
+
+while read -r regex; do
+    agrep "$regex" '10:100' 
+done < "$HOME/commands/rubycmdregex"

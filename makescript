@@ -1,7 +1,18 @@
 #!/bin/bash
 
-if ! test -f $HOME/commands/$1; then
-    echo -e '#!/bin/bash\n# Function to handle errors\nhandle_error() {\n    local exit_code=$1\n    local message=$2\n    echo "Error: $message"\n    exit $exit_code\n}\n\n# Usage\n#if [ $# -lt 1 ]; then\n    #handle_error 1 "Usage: $0 <>"\n#fi\n\n# Check if stdin is empty\n#if [ -t 0 ]; then\n    #echo "Error: No input provided on stdin" >&2\n    #exit 1\n#fi\n\n' > $HOME/commands/$1 && chmod +x $HOME/commands/$1 && nvim -c 'startinsert' + $HOME/commands/$1
+if [ $# == 1 ]; then
+  directory="$HOME/commands"
+elif [ $# == 2 ]; then
+  directory="$2"   
+else
+  echo "Usage: $0 <script name> <opt: path>"
+  exit 1
+fi  
+ 
+echo $directory
+
+if ! test -f $directory/$1; then
+  echo -e '#!/bin/bash\n# Function to handle errors\nhandle_error() {\n    local exit_code=$1\n    local message=$2\n    echo "Error: $message"\n    exit $exit_code\n}\n\n# Usage\n#if [ $# -lt 1 ]; then\n    #handle_error 1 "Usage: $0 <>"\n#fi\n\n# Check if stdin is empty\n#if [ -t 0 ]; then\n    #echo "Error: No input provided on stdin" >&2\n    #exit 1\n#fi\n\n' > $directory/$1 && chmod +x $directory/$1 && nvim -c 'startinsert' + $directory/$1
 else
     echo "Script already exists"
     exit 1

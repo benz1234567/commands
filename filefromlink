@@ -1,0 +1,26 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+#if [ $# -lt 1 ]; then
+    #handle_error 1 "Usage: $0 <>"
+#fi
+
+# Check if stdin is empty
+if [ -t 0 ]; then
+  handle_error 1 "No input provided on stdin"
+fi
+
+while read input; do
+  if [[ $input =~ \[\[([^\]]+)\]\] ]]; then
+    input="${BASH_REMATCH[1]}"
+    find $OBSIDIANDIRECTORY -type f -name "$input.md" || handle_error 1 "Could not find file"
+  else handle_error 1 "Input is not in proper link format"
+  fi
+done

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if ! test -f $HOME/commands/$1; then
-    echo -e '#!/bin/bash\n# Function to handle errors\nhandle_error() {\n    local exit_code=$1\n    local message=$2\n    echo "Error: $message"\n    exit $exit_code\n}\n\n# Usage\nif [ $# -lt 1 ]; then\n    handle_error 1 "Usage: $0 <>"\nfi\n\n' > $HOME/commands/$1 && chmod +x $HOME/commands/$1 && nvim -c 'startinsert' + $HOME/commands/$1
+    echo -e '#!/bin/bash\n# Function to handle errors\nhandle_error() {\n    local exit_code=$1\n    local message=$2\n    echo "Error: $message"\n    exit $exit_code\n}\n\n# Usage\n#if [ $# -lt 1 ]; then\n    #handle_error 1 "Usage: $0 <>"\n#fi\n\n# Check if stdin is empty\n#if [ -t 0 ]; then\n    #echo "Error: No input provided on stdin" >&2\n    #exit 1\n#fi\n\n' > $HOME/commands/$1 && chmod +x $HOME/commands/$1 && nvim -c 'startinsert' + $HOME/commands/$1
 else
     echo "Script already exists"
     exit 1

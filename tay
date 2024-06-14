@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ $# != 2 ]
-then
-	echo "Usage: tay <bugtypefile> <lesson>"
-else
-	echo $2 >> ~/hack/bugs/$1
-	echo "Added '$2' to ~/hack/bugs/$1"
-fi

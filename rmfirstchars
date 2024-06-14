@@ -1,0 +1,17 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# == 2 ]; then
+  sed -i "s/^.\{$1\}//" $2 || handle_error 1
+elif [ $# == 1 ]; then
+  sed "s/^.\{$1\}//"  || handle_error 1
+else
+    handle_error 1 "Usage: $0 <# of chars to remove from start of line> <opt: file>"
+fi

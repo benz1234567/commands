@@ -1,0 +1,39 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# -lt 1 ]; then
+    handle_error 1 "Usage: $0 <file>"
+fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+
+for linkedfile in $(getlinks $1 | filefromlink); do
+  link="[[$(basename $1 .md)]]"
+  read -r firstline < $linkedfile
+  if ! grep -qF "$link" $linkedfile; then
+    if [[ "$linkedfile" == "$OBSIDIANDIRECTORY/tags/"* || "$linkedfile" == "$OBSIDIANDIRECTORY/indexes/"* ]]; then
+      echo "$link" >> $linkedfile 
+      echo "Added $link to $linkedfile"
+    else
+      if echo $firstline | grep -qP '\[\[.+?\]\]'; then
+        sed -i "1s/$/ $link/" "$linkedfile"
+        echo "Added $link to $linkedfile"
+      else
+        sed -i "1i $link\n" "$linkedfile"
+        echo "Added $link to $linkedfile"
+      fi
+    fi
+  fi
+done

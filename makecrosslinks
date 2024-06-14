@@ -1,0 +1,31 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# -lt 0 ]; then
+    handle_error 1 "Usage: $0 <opt: loop>"
+fi
+
+for file in $(find $OBSIDIANDIRECTORY -type f); do
+  crosslink $file
+done
+
+if [ "$1" == "loop" ];
+then
+  # Loop forever
+  while true; do
+      # Wait for a write operation on any .md file in the directory
+      inotifywait -e modify -e move -e create -e delete -r --format '%w%f' -m "$OBSIDIANDIRECTORY" | while read file; do
+          # Check if the file extension is .md
+          if [[ "$file" =~ \.md$ ]]; then
+            crosslink $file
+          fi
+      done
+  done
+fi

@@ -21,6 +21,6 @@ handle_error() {
 for repo in $(cat $HOME/.githubrepos); do
   cd $HOME/$repo
   git add .
-  git commit -m "gitpushcommand $date"
+  git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"
   git push -u origin main
 done

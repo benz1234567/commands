@@ -8,9 +8,9 @@ handle_error() {
 }
 
 # Usage
-#if [ $# -lt 1 ]; then
-    #handle_error 1 "Usage: $0 <>"
-#fi
+if [ $# -lt 1 ]; then
+    handle_error 1 "Usage: $0 <pull or push>"
+fi
 
 # Check if stdin is empty
 #if [ -t 0 ]; then
@@ -20,7 +20,11 @@ handle_error() {
 
 for repo in $(cat $HOME/.githubrepos); do
   cd $repo
-  git add .
-  git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"
-  git push -u origin main
+  if [ $1 == "push" ]; then
+    git add .
+    git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"
+    git push -u origin main
+  elif [ $1 == "pull" ]; then
+    git pull origin main
+  fi
 done

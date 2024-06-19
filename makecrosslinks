@@ -4,7 +4,7 @@ handle_error() {
     local exit_code=$1
     local message=$2
     echo "Error: $message"
-    exit $exit_code
+    exit "$exit_code"
 }
 
 # Usage
@@ -12,20 +12,24 @@ if [ $# -lt 0 ]; then
     handle_error 1 "Usage: $0 <opt: loop>"
 fi
 
-for file in $(find $OBSIDIANDIRECTORY -type f); do
-  crosslink $file
-done
+echo "this is the new version btw" >&2
+
+crosslink_all_files() {
+  for file in $(find "$OBSIDIANDIRECTORY" -type f); do
+    crosslink "$file"
+    for link in $(getlinks "$file" | uniq); do
+      escapedlink=$(sed 's/\[/\\\[/g; s/\]/\\\]/g;' <<< $link)
+      dedupe "$escapedlink" "$file" #&& echo "deduped $link in $file" >&2
+    done
+  done
+}
+
+crosslink_all_files
 
 if [ "$1" == "loop" ];
 then
-  # Loop forever
-  while true; do
-      # Wait for a write operation on any .md file in the directory
-      inotifywait -e modify -e move -e create -e delete -r --format '%w%f' -m "$OBSIDIANDIRECTORY" | while read file; do
-          # Check if the file extension is .md
-          if [[ "$file" =~ \.md$ ]]; then
-            crosslink $file
-          fi
-      done
+  # Wait for a write operation on any .md file in the directory
+  inotifywait -e modify -m "$OBSIDIANDIRECTORY/.obsidian/workspace.json" -q | while read file; do
+    crosslink_all_files
   done
 fi

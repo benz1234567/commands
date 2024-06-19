@@ -20,7 +20,7 @@ fi
 while read input; do
   if [[ $input =~ \[\[([^\]]+)\]\] ]]; then
     input="${BASH_REMATCH[1]}"
-    find $OBSIDIANDIRECTORY -type f -name "$input.md" || handle_error 1 "Could not find file"
+    find $OBSIDIANDIRECTORY -type f -name "$input.md" | grep '.' || { touch "$HOME/Zettelkasten/$input.md"; echo "created $HOME/Zettelkasten/$input.md" >&2; echo "$HOME/Zettelkasten/$input.md"; }
   else handle_error 1 "Input is not in proper link format"
   fi
 done

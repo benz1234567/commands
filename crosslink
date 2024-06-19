@@ -20,20 +20,25 @@ fi
 
 
 for linkedfile in $(getlinks $1 | filefromlink); do
+  #Create lockfile so that you don't get duplicates
+  lockfile=$(echo "$linkedfile" | awk -F'/' '{for(i=1; i<NF; i++) print $i"/"}' | tr -d '\n').$(echo "$linkedfile" | awk -F'/' '{ print $NF }').lock
+  [ ! -f "$lockfile" ] && touch $lockfile || continue
+  [ -f "$lockfile" ] && echo "linkedfile = $linkedfile, created lockfile: $lockfile" >&2 || handle_error 1 "Lockfile not created"
   link="[[$(basename $1 .md)]]"
+  #dedupe links
+  #if duplicate links
+  [[ $(getlinks "$linkedfile" | uniq) == $(getlinks "$linkedfile") ]] && \
+
   read -r firstline < $linkedfile
-  if ! grep -qF "$link" $linkedfile; then
-    if [[ "$linkedfile" == "$OBSIDIANDIRECTORY/tags/"* || "$linkedfile" == "$OBSIDIANDIRECTORY/indexes/"* ]]; then
-      echo "$link" >> $linkedfile 
-      echo "Added $link to $linkedfile"
-    else
-      if echo $firstline | grep -qP '\[\[.+?\]\]'; then
-        sed -i "1s/$/ $link/" "$linkedfile"
-        echo "Added $link to $linkedfile"
-      else
-        sed -i "1i $link\n" "$linkedfile"
-        echo "Added $link to $linkedfile"
-      fi
-    fi
-  fi
+  #if link exists
+  ! grep -qF "$link" $linkedfile || continue
+  #if its a tag or index, append
+  [[ "$linkedfile" == "$OBSIDIANDIRECTORY/tags/"* || "$linkedfile" == "$OBSIDIANDIRECTORY/indexes/"* ]] && \
+    echo "$link" >> $linkedfile && echo "Added $link to $linkedfile; echo" >&2 || \
+    #if it has tags in the first line, add the the end of the first line, if not, or if the file is empty, append
+    (echo $firstline | grep -qP '\[\[.+?\]\]' && \
+    sed -i "1s/$/ $link/" "$linkedfile" && echo "Added $link to $linkedfile; sed 1s" >&2 || \
+    echo "$link" | cat - "$linkedfile" > /tmp/temp && mv /tmp/temp "$linkedfile" && echo "Added $link to $linkedfile; temp" >&2 \
+    )
+  rm $lockfile && echo "removed lockfile $lockfile"
 done

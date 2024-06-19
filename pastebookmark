@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#bookmark="$(grep -v '^#' ~/.local/share/pers/bookmarks.txt | dmenu -i -c -l 20 | tee >(xclip -sel clip))"
+bookmark="$(grep -v '^#' ~/.local/share/pers/bookmarks.txt | dmenu -i -c -l 20)"
+echo $bookmark | xclip -sel clip
+xdotool type $bookmark

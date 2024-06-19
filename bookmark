@@ -1,0 +1,12 @@
+#!/bin/sh
+file="$HOME/.local/share/pers/bookmarks.txt"
+bookmark="$(xclip -o)"
+
+if grep -q "^$bookmark$" "$file"; then
+	notify-send "Bookmark already exists"
+else
+	notify-send "Bookmark added: $bookmark"
+	echo "$bookmark" >> "$file"
+fi
+
+

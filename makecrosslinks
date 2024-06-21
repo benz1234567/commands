@@ -21,6 +21,7 @@ crosslink_all_files() {
       escapedlink=$(sed 's/\[/\\\[/g; s/\]/\\\]/g;' <<< $link)
       dedupe "$escapedlink" "$file" #&& echo "deduped $link in $file" >&2
     done
+    sed -i ':a; /^\n*$/{$d; N; ba; }' "$file" && echo "removed trailing empty lines in $file" >&2
   done
 }
 

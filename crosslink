@@ -18,6 +18,9 @@ fi
     #exit 1
 #fi
 
+cleanup() {
+  rm -f "$lockfile" && echo "removed lockfile: $lockfile" >&2
+}
 
 for linkedfile in $(getlinks $1 | filefromlink); do
   #Create lockfile so that you don't get duplicates
@@ -25,20 +28,16 @@ for linkedfile in $(getlinks $1 | filefromlink); do
   [ ! -f "$lockfile" ] && touch $lockfile || continue
   [ -f "$lockfile" ] && echo "linkedfile = $linkedfile, created lockfile: $lockfile" >&2 || handle_error 1 "Lockfile not created"
   link="[[$(basename $1 .md)]]"
-  #dedupe links
-  #if duplicate links
-  [[ $(getlinks "$linkedfile" | uniq) == $(getlinks "$linkedfile") ]] && \
-
-  read -r firstline < $linkedfile
+  read -r firstline < "$linkedfile"
   #if link exists
-  ! grep -qF "$link" $linkedfile || continue
+  grep -qF "$link" "$linkedfile" && { echo "$link already in $linkedfile, cleaning up"; cleanup; continue;}
   #if its a tag or index, append
   [[ "$linkedfile" == "$OBSIDIANDIRECTORY/tags/"* || "$linkedfile" == "$OBSIDIANDIRECTORY/indexes/"* ]] && \
-    echo "$link" >> $linkedfile && echo "Added $link to $linkedfile; echo" >&2 || \
+    echo "$link" >> "$linkedfile" && echo "Added $link to $linkedfile; echo" >&2 || \
     #if it has tags in the first line, add the the end of the first line, if not, or if the file is empty, append
-    (echo $firstline | grep -qP '\[\[.+?\]\]' && \
-    sed -i "1s/$/ $link/" "$linkedfile" && echo "Added $link to $linkedfile; sed 1s" >&2 || \
-    echo "$link" | cat - "$linkedfile" > /tmp/temp && mv /tmp/temp "$linkedfile" && echo "Added $link to $linkedfile; temp" >&2 \
-    )
-  rm $lockfile && echo "removed lockfile $lockfile"
+    { grep -qP '\[\[.+?\]\]' <<< "$firstline" && \
+    (sed -i "1s/$/ $link/" "$linkedfile" && echo "Added $link to $linkedfile; sed 1s" >&2 || echo "sed 1s failed" >&2; exit 0) || \
+    echo "$link" | cat - "$linkedfile" | sudo tee /tmp/crosslink.tmp && mv /tmp/crosslink.tmp "$linkedfile" && echo "Added $link to $linkedfile; temp" >&2 \
+    ;}
+  cleanup
 done

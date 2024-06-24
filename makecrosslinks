@@ -12,8 +12,6 @@ if [ $# -lt 0 ]; then
     handle_error 1 "Usage: $0 <opt: loop>"
 fi
 
-echo "this is the new version btw" >&2
-
 crosslink_all_files() {
   for file in $(find "$OBSIDIANDIRECTORY" -type f); do
     crosslink "$file"
@@ -21,7 +19,7 @@ crosslink_all_files() {
       escapedlink=$(sed 's/\[/\\\[/g; s/\]/\\\]/g;' <<< $link)
       dedupe "$escapedlink" "$file" #&& echo "deduped $link in $file" >&2
     done
-    sed -i ':a; /^\n*$/{$d; N; ba; }' "$file" && echo "removed trailing empty lines in $file" >&2
+    sed -i ':a; /^\n*$/{$d; N; ba; }' "$file" #&& echo "removed trailing empty lines in $file" >&2
   done
 }
 
@@ -29,8 +27,16 @@ crosslink_all_files
 
 if [ "$1" == "loop" ];
 then
-  # Wait for a write operation on any .md file in the directory
-  inotifywait -e modify -m "$OBSIDIANDIRECTORY/.obsidian/workspace.json" -q | while read file; do
-    crosslink_all_files
-  done
+  notify-send "not functional"
+  exit
+  ## Wait for a write operation on any .md file in the directory
+  #inotifywait -e modify -m "$OBSIDIANDIRECTORY/.obsidian/workspace.json" -q | while read file; do
+    #notify-send "workspace.json modified"
+    #crosslink_all_files; notify-send "crosslinking al files"
+  #done
+  
+  #while true; do
+    ##inotifywait -e modify "$OBSIDIANDIRECTORY/.obsidian/workspace.json" && crosslink_all_files && notify-send "success"
+    #inotifywait -e modify "$OBSIDIANDIRECTORY/.obsidian/workspace.json" && notify-send "workspace changed"
+  #done
 fi

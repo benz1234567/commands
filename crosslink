@@ -19,25 +19,27 @@ fi
 #fi
 
 cleanup() {
-  rm -f "$lockfile" && echo "removed lockfile: $lockfile" >&2
+  rm -f "$lockfile" # && echo "removed lockfile: $lockfile" >&2
 }
 
 for linkedfile in $(getlinks $1 | filefromlink); do
   #Create lockfile so that you don't get duplicates
   lockfile=$(echo "$linkedfile" | awk -F'/' '{for(i=1; i<NF; i++) print $i"/"}' | tr -d '\n').$(echo "$linkedfile" | awk -F'/' '{ print $NF }').lock
   [ ! -f "$lockfile" ] && touch $lockfile || continue
-  [ -f "$lockfile" ] && echo "linkedfile = $linkedfile, created lockfile: $lockfile" >&2 || handle_error 1 "Lockfile not created"
+  #[ -f "$lockfile" ] && echo "linkedfile = $linkedfile, created lockfile: $lockfile" >&2 || handle_error 1 "Lockfile not created"
+  [ -f "$lockfile" ] || handle_error 1 "Lockfile not created"
   link="[[$(basename $1 .md)]]"
   read -r firstline < "$linkedfile"
   #if link exists
-  grep -qF "$link" "$linkedfile" && { echo "$link already in $linkedfile, cleaning up"; cleanup; continue;}
+  #grep -qF "$link" "$linkedfile" && { echo "$link already in $linkedfile, cleaning up"; cleanup; continue;}
+  grep -qF "$link" "$linkedfile" && { cleanup; continue;}
   #if its a tag or index, append
   [[ "$linkedfile" == "$OBSIDIANDIRECTORY/tags/"* || "$linkedfile" == "$OBSIDIANDIRECTORY/indexes/"* ]] && \
     echo "$link" >> "$linkedfile" && echo "Added $link to $linkedfile; echo" >&2 || \
     #if it has tags in the first line, add the the end of the first line, if not, or if the file is empty, append
     { grep -qP '\[\[.+?\]\]' <<< "$firstline" && \
     (sed -i "1s/$/ $link/" "$linkedfile" && echo "Added $link to $linkedfile; sed 1s" >&2 || echo "sed 1s failed" >&2; exit 0) || \
-    echo "$link" | cat - "$linkedfile" | sudo tee /tmp/crosslink.tmp && mv /tmp/crosslink.tmp "$linkedfile" && echo "Added $link to $linkedfile; temp" >&2 \
+    echo -e "$link\n" | cat - "$linkedfile" > "$linkedfile.tmp" && mv "$linkedfile.tmp" "$linkedfile" && rm "$linkedfile.tmp" && echo "Added $link to $linkedfile; temp" >&2 \
     ;}
   cleanup
 done

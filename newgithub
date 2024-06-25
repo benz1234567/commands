@@ -17,6 +17,7 @@ git init
 git add .
 git commit -m 'first commit'
 git branch -M main
+gh repo create
 git remote add origin https://github.com/benz1234567/$1.git
 git push -u origin main
 pwd >> $HOME/.githubrepos

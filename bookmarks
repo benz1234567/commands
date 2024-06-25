@@ -1,2 +1,2 @@
 #!/bin/sh
-vim ~/.local/share/pers/bookmarks.txt
+$EDITOR ~/.sensitive/bookmarks

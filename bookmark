@@ -1,5 +1,5 @@
 #!/bin/sh
-file="$HOME/.local/share/pers/bookmarks.txt"
+file="$HOME/.sensitive/bookmarks"
 bookmark="$(xclip -o)"
 
 if grep -q "^$bookmark$" "$file"; then

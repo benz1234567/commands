@@ -20,6 +20,7 @@ fi
 
 for repo in $(cat $HOME/.githubrepos); do
   cd $repo
+  echo "$repo"
   if [ $1 == "push" ]; then
     git add .
     git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"

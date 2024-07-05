@@ -13,7 +13,7 @@ if [ $# -lt 0 ]; then
 fi
 
 crosslink_all_files() {
-  for file in $(find "$OBSIDIANDIRECTORY" -type f); do
+  for file in $(find "$OBSIDIANDIRECTORY" -type f -name "*.md"); do
     crosslink "$file"
     for link in $(getlinks "$file" | uniq); do
       escapedlink=$(sed 's/\[/\\\[/g; s/\]/\\\]/g;' <<< $link)

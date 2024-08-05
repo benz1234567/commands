@@ -21,4 +21,4 @@ handle_error() {
 cd $HOME/.dotfiles
 git pull origin main
 cd $HOME
-for file in $(ls -a .dotfiles/ | grep -v -e '^\.$' -e '^\.git$' -e '^\.\.$'); do cp .dotfiles/"$file" "$file"; done
+for file in $(ls -a .dotfiles/ | grep -v -e '^\.$' -e '^\.git$' -e '^\.\.$'); do cp .dotfiles/"$file" "$file" 2>/dev/null; done

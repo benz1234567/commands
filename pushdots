@@ -19,6 +19,6 @@ handle_error() {
 #fi
 
 cd $HOME
-for file in $(ls -a .dotfiles/ | grep -v -e '^\.$' -e '^\.git$' -e '^\.\.$'); do echo "$file"; cp "$file" .dotfiles/"$file"; done
+for file in $(ls -a .dotfiles/ | grep -v -e '^\.$' -e '^\.git$' -e '^\.\.$'); do echo "$file"; cp "$file" .dotfiles/"$file" 2>/dev/null; done
 cd .dotfiles
 commit 'pushdots command'

@@ -19,13 +19,32 @@ fi
 #fi
 
 for repo in $(cat $HOME/.githubrepos); do
-  cd $repo
   echo "$repo"
   if [ $1 == "push" ]; then
+    ! [ -d "$repo" ] && handle_error 1 "$repo doesn't exist"
+    cd "$repo"
     git add .
     git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"
     git push -u origin main
   elif [ $1 == "pull" ]; then
-    git pull origin main
+    if [ -d "$repo" ]; then
+      echo "repo exists" >&2
+      cd "$repo"
+      git pull origin main
+      if [ "$repo" == "/home/benny/suckless" ]; then
+        for dir in $(find "/home/benny/suckless" -maxdepth 1 -type d -name '[^.]*' | tail -n +2); do
+          cd "$dir"
+          sudo make clean install
+        done
+      elif [ "$repo" == "/home/benny/.dotfiles" ]; then
+        for file in $(find $HOME/.dotfiles -maxdepth 1 -type f); do
+          cp "$file" $HOME/$(cut -d '/' -f4 <<< $file)
+        done
+      fi
+    else
+      git=${repo##*/}
+      echo "repo doesn't exist, cloning" >&2
+      git clone "https://github.com/benz1234567/$git.git"
+    fi
   fi
 done

@@ -19,6 +19,7 @@ fi
 #fi
 
 for repo in $(cat $HOME/.githubrepos); do
+  cd $HOME
   echo "---------- REPO: $repo ----------"
   if [ $1 == "push" ]; then
     ! [ -d "$repo" ] && handle_error 1 "$repo doesn't exist"

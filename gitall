@@ -29,7 +29,6 @@ for repo in $(cat $HOME/.githubrepos); do
     git commit -m "gitpushcommand $(date '+%D' | tr '/' '-')"
     git push -u origin main
   elif [ $1 == "pull" ]; then
-    #! [ -d "$repo" ] && echo "$repo doesn't exist, creating" >&2 && mkdir -p "$repo" && cd "$repo" && git init
     if [ -d "$repo" ]; then
       [ "$repo" == "/home/benny/.dotfiles" ] && pulldots && continue
       cd "$repo"
@@ -42,7 +41,8 @@ for repo in $(cat $HOME/.githubrepos); do
       fi
     else
       git=${repo##*/}
-      cd $HOME
+      repoloc=${repo%/*}
+      cd "$repoloc"
       echo "repo doesn't exist, cloning" >&2
       git clone "https://github.com/benz1234567/$git.git"
     fi

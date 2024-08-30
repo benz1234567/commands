@@ -23,7 +23,7 @@ st -c "floating" -g 100x30 -e sh -c '.fuzzyscript' 2>/dev/null
 
 [ $(cat /tmp/pj | wc -l) -lt 1 ] && echo "/home/benny" > "$HOME/.projdir" && exit
 dir=$(cat "/tmp/pj")
-cd "$(cat $HOME/.projdir)"
+[ "$dir" == "~" ] && dir="/home/benny"
 cd "$dir"
 echo $(pwd) > $HOME/.projdir
 rm -f /tmp/pj

@@ -27,7 +27,6 @@ crosslink_all_files
 
 if [ "$1" == "loop" ];
 then
-  notify-send "not functional"
   exit
   ## Wait for a write operation on any .md file in the directory
   #inotifywait -e modify -m "$OBSIDIANDIRECTORY/.obsidian/workspace.json" -q | while read file; do

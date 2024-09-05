@@ -1,0 +1,22 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# -lt 1 ]; then
+    handle_error 1 "Usage: $0 <website>"
+fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+[[ "$1" =~ "https://" ]] && echo "$1" | rmfirstchars 8 | tr '/' '-' | sed 's/-$//' | echo "$(cat).html"
+[[ "$1" =~ "http://" ]] && echo "$1" | rmfirstchars 7 | tr '/' '-' | sed 's/-$//' | echo "$(cat).html"

@@ -19,11 +19,8 @@ handle_error() {
 #fi
 
 # dir="$(find . -type d | dmenu -c -i -l 20)"
-st -c "floating" -g 100x30 -e sh -c '.fuzzyscript' 2>/dev/null
+dir=$({ find . -type d -print 2>/dev/null; echo -e "..\n../..\n~";} | fzf)
 
-[ $(cat /tmp/pj | wc -l) -lt 1 ] && echo "/home/benny" > "$HOME/.projdir" && exit
-dir=$(cat "/tmp/pj")
-[ "$dir" == "~" ] && dir="/home/benny"
+[[ -z "$dir" || "$dir" == "~" ]] && dir="/home/benny"
 cd "$dir"
 echo $(pwd) > $HOME/.projdir
-rm -f /tmp/pj

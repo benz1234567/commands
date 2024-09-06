@@ -1,0 +1,42 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+#if [ $# -lt 1 ]; then
+    #handle_error 1 "Usage: $0 <>"
+#fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+dawd=$(ps -o ppid= -p $$)
+ppid=$(ps -o ppid= -p $dawd)
+
+# Get the window ID for the parent PID using xprop
+WINDOW_ID=$(xprop -root _NET_CLIENT_LIST | awk '{for (i=2; i<=NF; i++) print $i}' | while read id; do
+    if xprop -id $id _NET_WM_PID | grep -q "$ppid"; then
+        echo $id
+        break
+    fi
+done)
+
+[ -z "$WINDOW_ID" ] && exit
+
+bookmark=$(xprop -id ${WINDOW_ID%,} _SURF_URI | grep -o 'http[^"]\+')
+file="$HOME/.sensitive/surf-bookmarks.txt"
+
+if grep -q "^$bookmark$" "$file"; then
+	notify-send "Bookmark already exists"
+else
+	notify-send "Bookmark added: $bookmark"
+	echo "$bookmark" >> "$file"
+fi

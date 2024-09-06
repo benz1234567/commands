@@ -4,7 +4,7 @@ handle_error() {
     local exit_code=$1
     local message=$2
     echo "Error: $message"
-    exit $exit_code
+    exit "$exit_code"
 }
 
 # Usage
@@ -22,13 +22,13 @@ cleanup() {
   rm -f "$lockfile" # && echo "removed lockfile: $lockfile" >&2
 }
 
-for linkedfile in $(getlinks $1 | filefromlink); do
+for linkedfile in $(getlinks "$1" | filefromlink); do
   #Create lockfile so that you don't get duplicates
   lockfile=$(echo "$linkedfile" | awk -F'/' '{for(i=1; i<NF; i++) print $i"/"}' | tr -d '\n').$(echo "$linkedfile" | awk -F'/' '{ print $NF }').lock
-  [ ! -f "$lockfile" ] && touch $lockfile || continue
+  [ ! -f "$lockfile" ] && touch "$lockfile" || continue
   #[ -f "$lockfile" ] && echo "linkedfile = $linkedfile, created lockfile: $lockfile" >&2 || handle_error 1 "Lockfile not created"
   [ -f "$lockfile" ] || handle_error 1 "Lockfile not created"
-  link="[[$(basename $1 .md)]]"
+  link="[[$(basename "$1" .md)]]"
   read -r firstline < "$linkedfile"
   #if link exists
   #grep -qF "$link" "$linkedfile" && { echo "$link already in $linkedfile, cleaning up"; cleanup; continue;}

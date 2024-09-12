@@ -2,4 +2,4 @@
 
 STATE_FILE="$HOME/.nightlight_state"
 
-[ -f "$STATE_FILE" ] && { rm "$STATE_FILE"; redshift -x > /dev/null 2>&1; echo "Nightlight turned off";} || { touch "$STATE_FILE"; redshift -O 1000 > /dev/null 2>&1; echo "Nightlight turned on";}
+[ -f "$STATE_FILE" ] && { rm "$STATE_FILE"; echo "Nightlight turned off";} || { touch "$STATE_FILE"; echo "Nightlight turned on";}

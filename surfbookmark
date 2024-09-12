@@ -22,8 +22,8 @@ dawd=$(ps -o ppid= -p $$)
 ppid=$(ps -o ppid= -p $dawd)
 
 # Get the window ID for the parent PID using xprop
-WINDOW_ID=$(xprop -root _NET_CLIENT_LIST | awk '{for (i=2; i<=NF; i++) print $i}' | while read id; do
-    if xprop -id $id _NET_WM_PID | grep -q "$ppid"; then
+WINDOW_ID=$(xprop -root _NET_CLIENT_LIST | awk '{for (i=5; i<=NF; i++) print $i}' | while read id; do
+    if xprop -id $id _NET_WM_PID | grep -q $ppid; then
         echo $id
         break
     fi
@@ -37,6 +37,6 @@ file="$HOME/.sensitive/surf-bookmarks.txt"
 if grep -q "^$bookmark$" "$file"; then
 	notify-send "Bookmark already exists"
 else
-	notify-send "Bookmark added: $bookmark"
+	notify-send "Surf Bookmark added: $bookmark"
 	echo "$bookmark" >> "$file"
 fi

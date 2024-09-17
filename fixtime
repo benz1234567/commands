@@ -1,0 +1,24 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+#if [ $# -lt 1 ]; then
+    #handle_error 1 "Usage: $0 <>"
+#fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+unixtime=$(curl 'http://worldtimeapi.org/api/timezone/America/Los_Angeles' 2>/dev/null | grep -o '"unixtime":[0-9]\+' | grep -o '[0-9]\+')
+
+sudo hwclock --set --date="$(date -d @$unixtime +'%Y-%m-%d %H:%M:%S')"
+sudo hwclock -s

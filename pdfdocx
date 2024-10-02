@@ -1,0 +1,21 @@
+#!/bin/sh
+python3 - $@ << END
+import sys
+from pdf2docx import Converter
+
+def convert_pdf_to_docx(input_file, output_file):
+    cv = Converter(input_file)
+    cv.convert(output_file, start=0, end=None)
+    cv.close()
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: pdfdocx input.pdf output.docx")
+        sys.exit(1)
+
+    input_pdf = sys.argv[1]
+    output_docx = sys.argv[2]
+    
+    convert_pdf_to_docx(input_pdf, output_docx)
+    print(f"Converted '{input_pdf}' to '{output_docx}'")
+END

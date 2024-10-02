@@ -1,0 +1,21 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo -e "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+if [ $# -lt 4 ]; then
+    handle_error 1 "Usage: $0 <input> <outputfile> <startsecond> <endsecond>\n\nKeep in mind that the seconds are the parts you want to be gone, not keep"
+fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+ffmpeg -i "$1" -vf "select='not(between(t,$3,$4))', setpts=N/FRAME_RATE/TB" -af "aselect='not(between(t,$3,$4))', asetpts=N/SR/TB" "$2"

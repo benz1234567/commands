@@ -1,0 +1,64 @@
+#!/bin/bash
+# Function to handle errors
+handle_error() {
+    local exit_code=$1
+    local message=$2
+    echo "Error: $message"
+    exit $exit_code
+}
+
+# Usage
+#if [ $# -lt 1 ]; then
+#    handle_error 1 "Usage: $0 <cutfile> <videofile>"
+#fi
+
+# Check if stdin is empty
+#if [ -t 0 ]; then
+    #echo "Error: No input provided on stdin" >&2
+    #exit 1
+#fi
+
+tts() {
+    # Read input string into an array, splitting by colon
+    IFS=':' read -r -a time_parts <<< "$1"
+
+    # Initialize default values
+    hh=0
+    mm=0
+    ss=0
+
+    times=0
+    # Process the array backwards
+    for ((i=${#time_parts[@]}-1; i>=0; i--)); do
+      if [[ $times -lt 3 ]]; then
+        times=$((times + 1))
+        [[ $times == 1 ]] && ss="${time_parts[i]}"
+        [[ $times == 2 ]] && mm="${time_parts[i]}"
+        [[ $times == 3 ]] && hh="${time_parts[i]}"
+      else
+        continue
+      fi
+    done
+
+     # Remove leading zeros
+    hh="${hh#0}"
+    mm="${mm#0}"
+    ss="${ss#0}"
+
+    # If any value is empty after removing leading zeros, set it to 0
+    hh="${hh:-0}"
+    mm="${mm:-0}"
+    ss="${ss:-0}"
+
+    # Calculate total seconds
+    total_seconds=$((hh * 3600 + mm * 60 + ss))
+    echo "$total_seconds"
+}
+
+while read -r line; do
+  start=$(cut -d'-' -f 1 <<< $line)
+  end=$(cut -d'-' -f 2 <<< $line)
+  ss=$(tts "$start")
+  es=$(tts "$end")
+  echo "start seconds is $ss and end seconds is $es"
+done < "$1"

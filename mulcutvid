@@ -9,7 +9,7 @@ handle_error() {
 
 # Usage
 #if [ $# -lt 1 ]; then
-#    handle_error 1 "Usage: $0 <cutfile> <videofile>"
+#    handle_error 1 "Usage: $0 <cutfile> <videofile> <output filename>"
 #fi
 
 # Check if stdin is empty
@@ -55,10 +55,33 @@ tts() {
     echo "$total_seconds"
 }
 
+cuts=()
+cute=()
+
 while read -r line; do
   start=$(cut -d'-' -f 1 <<< $line)
   end=$(cut -d'-' -f 2 <<< $line)
-  ss=$(tts "$start")
-  es=$(tts "$end")
-  echo "start seconds is $ss and end seconds is $es"
+  cuts+=("$(tts $start)")
+  cute+=("$(tts $end)")
 done < "$1"
+
+[[ ${#cuts[@]} == ${#cute[@]} ]] || handle_error 1 "cuts not equal to cute"
+
+read -r -d '' command1 << EOM
+ffmpeg -i "$2" -vf "select='not(between(t,
+EOM
+read -r -d '' command2 << EOM
+', setpts=N/FRAME_RATE/TB" -af "aselect='not(between(t,
+EOM
+read -r -d '' command3 << EOM
+', asetpts=N/SR/TB" "$3"
+EOM
+
+for i in $(seq 0 $((${#cuts[@]} - 1))); do
+  command1+="${cuts[i]},${cute[i]})+between(t,"
+  command2+="${cuts[i]},${cute[i]})+between(t,"
+done
+
+c1="${command1%+between(t,})"
+c2="${command2%+between(t,})"
+eval "$c1$c2$command3"
